@@ -13,7 +13,9 @@ body {
     direction: rtl; 
     text-align: right;
     padding-top: 60px; 
+    /* تم حذف: opacity: 0; و transition: opacity 0.5s ease-in-out; */
 }
+
 
 /* شريط التنقل العلوي (Header) */
 .main-header {
@@ -30,10 +32,39 @@ body {
     z-index: 100;
 }
 
+/* ستايل الشعار (القاعدة) */
 .logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: #007bff; 
+    font-size: 28px; 
+    font-weight: 900;
+    color: #4d94ff; 
+    position: relative;
+    padding-bottom: 5px;
+}
+
+/* ستايلات النيون والحركة */
+.neon-logo {
+    /* تطبيق الظل النيوني */
+    text-shadow: 
+        0 0 5px rgba(77, 148, 255, 0.7), 
+        0 0 15px rgba(77, 148, 255, 0.5), 
+        0 0 30px rgba(77, 148, 255, 0.3); 
+    
+    /* تطبيق الحركة الاهتزازية */
+    animation: neon-pulse 3s infinite alternate;
+    display: inline-block; 
+    transform-origin: bottom; 
+}
+
+/* تعريف حركة الاهتزاز الخفيفة (Keyframes) */
+@keyframes neon-pulse {
+    0%, 100% {
+        transform: translateY(0) rotate(0deg) scale(1); 
+        opacity: 1;
+    }
+    50% {
+        transform: translateY(-2px) rotate(0.5deg) scale(1.02);
+        opacity: 0.95;
+    }
 }
 
 /* زر الانضمام الجديد */
@@ -63,7 +94,7 @@ body {
 /* ستايل حاوية الإعلان */
 .ad-container {
     width: 100%;
-    height: 100px;
+    height: 100px; 
     background-color: #3a3a3a;
     color: #ccc;
     display: flex;
@@ -118,6 +149,16 @@ body {
     color: #aaa;
 }
 
+/* ستايل الفيديو */
+.post-video {
+    width: 100%;
+    max-height: 500px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    background-color: black;
+}
+
+/* ستايل نص المنشور (المستخدم في post-1) */
 .post-text {
     margin-top: 10px;
     font-size: 18px; 
@@ -126,81 +167,50 @@ body {
     color: #4d94ff; 
 }
 
-/* ************************************ */
-/* ستايلات الاستفتاء (Poll) */
-/* ************************************ */
-.poll-question {
-    font-size: 18px;
-    color: #007bff;
-    margin-bottom: 15px;
+/* ستايلات المحتوى الجديد (post-2) */
+.post-title {
+    font-size: 20px;
+    color: #FFD700; 
+    margin-bottom: 10px;
 }
 
-/* ستايل الأزرار قبل التصويت */
-.poll-btn {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 8px;
+.post-description {
     background-color: #2a2a2a;
-    color: white;
-    border: 1px solid #333;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    padding: 15px;
+    border-radius: 8px;
+    border-left: 5px solid #007bff;
+    font-size: 14px;
+    line-height: 1.8;
 }
 
-.poll-btn:hover {
-    background-color: #3a3a3a;
-}
-.poll-btn:active {
-    background-color: #007bff; /* لإعطاء إشارة بصرية عند الضغط */
-}
-
-/* ستايل عرض النتائج */
-.poll-results-display {
-    margin-top: 15px;
+.post-description ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 10px;
 }
 
-.poll-result {
+.post-description ul li {
+    margin-bottom: 5px;
+}
+
+.highlight-item {
+    color: #4CAF50; 
+    font-weight: bold;
+}
+
+.description-line {
+    color: #E0E0E0;
+    font-weight: normal;
+}
+
+/* شريط عرض المشاهدات */
+.post-actions {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding: 5px 0;
-    font-size: 14px;
-    color: #ccc;
-    position: relative;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+    margin-top: 10px;
 }
-
-.poll-result > span:first-child {
-    z-index: 10;
-    font-weight: bold;
-    margin-left: 10px;
-}
-
-.poll-result > span.poll-percentage {
-    z-index: 10;
-    color: #007bff;
-    font-weight: bold;
-}
-
-.poll-bar-container {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    background-color: #333; /* خلفية الشريط (اللون الرمادي الداكن) */
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.poll-bar {
-    height: 100%;
-    background-color: #007bff; /* لون شريط التقدم */
-    transition: width 0.5s ease;
-}
-
 
 /* ستايل عداد المشاهدات */
 .view-count {
@@ -212,7 +222,9 @@ body {
     border-radius: 5px;
 }
 
-/* ستايل النافذة المنبثقة (Popup) - كما هو */
+/* ************************************ */
+/* ستايل النافذة المنبثقة (Popup) */
+/* ************************************ */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -251,6 +263,7 @@ body {
     line-height: 1;
 }
 
+/* ستايل أزرار الانضمام */
 .join-btn {
     display: block;
     width: 100%;

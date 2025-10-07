@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TOBI - المركز الشخصي</title>
+    <title>H-X TEAM® - المركز الشخصي</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     
@@ -14,9 +14,9 @@
     <script>
       // استبدل القيم هنا بالقيم الحقيقية من مشروعك في Firebase
       const firebaseConfig = {
-        apiKey: "YOUR_API_KEY",
-        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-        projectId: "YOUR_PROJECT_ID",
+        apiKey: "YOUR_API_KEY", 
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com", 
+        projectId: "YOUR_PROJECT_ID", 
         storageBucket: "YOUR_PROJECT_ID.appspot.com",
         messagingSenderId: "YOUR_SENDER_ID",
         appId: "YOUR_APP_ID"
@@ -28,9 +28,9 @@
     
 </head>
 <body>
-
+    
     <header class="main-header">
-        <div class="logo">TOBI</div>
+        <div class="logo"><span class="neon-logo">H-X TEAM®</span></div>
         <a href="#join-popup" class="login-btn">انضم إلينا</a>
     </header>
 
@@ -40,65 +40,55 @@
             <p>مساحة إعلانية علوية | AD SPACE</p>
         </div>
         
-        <article class="post-card" id="poll-1">
+        <article class="post-card" id="post-2">
             <div class="post-header">
                 <img src="https://files.catbox.moe/65ipmq.jpg" alt="صورة بروفايل TOBI" class="profile-avatar">
                 <div class="post-info">
                     <span class="username">TOBI</span>
-                    <span class="post-date">استفتاء سريع</span>
+                    <span class="post-date">جديد وحصري</span>
                 </div>
             </div>
 
             <div class="post-content">
-                <p class="post-text poll-question">ما هو المحتوى الذي تفضله أكثر على الموقع؟</p>
-                
-                <div class="poll-options-container" id="poll-options-1">
-                    
-                    <button class="poll-btn" data-option="ملفات كراش">ملفات كراش</button>
-                    <button class="poll-btn" data-option="شروحات فيديو">شروحات فيديو</button>
-                    <button class="poll-btn" data-option="تصاميم">تصاميم</button>
-                    
-                    <div class="poll-results-display" style="display: none;">
-                        <div class="poll-result" data-option="ملفات كراش">
-                            <span>ملفات كراش</span>
-                            <div class="poll-bar-container">
-                                <div class="poll-bar" style="width: 0%;"></div>
-                            </div>
-                            <span class="poll-percentage">0%</span>
-                        </div>
-                        
-                        <div class="poll-result" data-option="شروحات فيديو">
-                            <span>شروحات فيديو</span>
-                            <div class="poll-bar-container">
-                                <div class="poll-bar" style="width: 0%;"></div>
-                            </div>
-                            <span class="poll-percentage">0%</span>
-                        </div>
-                        
-                        <div class="poll-result" data-option="تصاميم">
-                            <span>تصاميم</span>
-                            <div class="poll-bar-container">
-                                <div class="poll-bar" style="width: 0%;"></div>
-                            </div>
-                            <span class="poll-percentage">0%</span>
-                        </div>
-                    </div>
-                    
+                <video controls class="post-video" src="https://files.catbox.moe/roedo4.mp4"></video>
+
+                <p class="post-text post-title">عودة العملاق v20 قريباً</p>
+                <div class="post-description">
+                    <p class="description-line">*بوت كامل شامل كل شيء هتحتاجه ✨*</p>
+                    <ul>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش حـ/*ـرق نسخه واتساب</span></li>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش حـ/*ـرق وجه المستخدم</span></li>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش حـ/*ـرق واتس ايفون</span></li>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش قطع نت و تأخير شديد</span></li>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش حـ/*ـرق شات جروبات</span></li>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش طـ/*ـرد كل اعضاء الجروب</span></li>
+                        <li><span class="highlight-item">[📛] كـ/*ـراش حـ/*ـرق شات اندرويد</span></li>
+                        <li><span class="highlight-item">[📛] اسـ/*ـبام كـ/*ـراش حـ/*ـرق نسخه</span></li>
+                        <li><span class="highlight-item">[📛] اسـ/*ـبام مكالمات</span></li>
+                        <li><span class="highlight-item">[📛] اسـ/*ـبام رسايل</span></li>
+                        <li><span class="highlight-item">[📛] تقدر تكلم اي حد مبلكك</span></li>
+                        <li><span class="highlight-item">[📛] تقدر تبعت ف اي جروب مقفول</span></li>
+                        <li><span class="description-line">و غيرهممم كتيررر🥶</span></li>
+                    </ul>
                 </div>
             </div>
-            </article>
+
+            <div class="post-actions">
+                <span class="view-count" id="views-2">... جاري التحميل ...</span>
+            </div>
+        </article>
         
         <article class="post-card" id="post-1">
             <div class="post-header">
                 <img src="https://files.catbox.moe/65ipmq.jpg" alt="صورة بروفايل TOBI" class="profile-avatar">
                 <div class="post-info">
                     <span class="username">TOBI</span>
-                    <span class="post-date">منشور حصري</span>
+                    <span class="post-date">إعلان مهم</span>
                 </div>
             </div>
 
             <div class="post-content">
-                <p class="post-text">أول لما زيارات الموقع توصل **100** هنزل **ملف كراش مجاني** هنا ف الموقع! تابعوا عداد المشاهدات وشاركوا الموقع! 💪</p>
+                <p class="post-text">هنزل هنا كل ملفات البوتات و التحديثات المهم عشان قنا التلي متتحظرش... 🔥</p>
             </div>
 
             <div class="post-actions">
@@ -121,7 +111,7 @@
                 انضم إلى تيليجرام
             </a>
             
-            <a href="https://youtube.com/@tobi_v9?si=QI7qdeI5MANaeU" target="_blank" class="join-btn youtube-btn">
+            <a href="https://youtube.com/@tobi_v9?si=QI7qdeI6l5MANaeU" target="_blank" class="join-btn youtube-btn">
                 انضم إلى قناة اليوتيوب
             </a>
             
