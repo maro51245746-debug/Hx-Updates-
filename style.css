@@ -1,0 +1,217 @@
+/* إعادة تعيين بسيطة وخط عربي */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Cairo', sans-serif; 
+}
+
+/* الخلفية الغامقة الأساسية */
+body {
+    background-color: #121212; 
+    color: #E0E0E0; 
+    direction: rtl; 
+    text-align: right;
+    padding-top: 60px; 
+}
+
+/* شريط التنقل العلوي (Header) */
+.main-header {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    background-color: #1f1f1f; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    z-index: 100;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #007bff; 
+}
+
+/* زر الانضمام الجديد */
+.login-btn {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    text-decoration: none;
+}
+
+.login-btn:hover {
+    background-color: #0056b3;
+}
+
+/* منطقة المحتوى الرئيسية */
+.content-area {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 0 10px;
+}
+
+/* ستايل حاوية الإعلان */
+.ad-container {
+    width: 100%;
+    height: 100px; /* حجم موحد للإعلان */
+    background-color: #3a3a3a;
+    color: #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+}
+
+/* بطاقة المنشور الوحيدة */
+.post-card {
+    background-color: #1e1e1e; 
+    border-radius: 12px;
+    padding: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
+    border: 1px solid #333; 
+}
+
+/* رأس المنشور */
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+/* ستايل صورة البروفايل */
+.profile-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-left: 10px; 
+    border: 2px solid #007bff; 
+}
+
+.post-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.username {
+    font-weight: bold;
+    color: white;
+    font-size: 16px;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #aaa;
+}
+
+.post-text {
+    margin-top: 10px;
+    font-size: 18px; 
+    line-height: 1.6;
+    font-weight: bold;
+    color: #4d94ff; 
+}
+
+/* شريط عرض المشاهدات */
+.post-actions {
+    display: flex;
+    align-items: center;
+    border-top: 1px solid #333;
+    padding-top: 10px;
+    margin-top: 10px;
+}
+
+/* ستايل عداد المشاهدات */
+.view-count {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007bff; 
+    padding: 5px 10px;
+    background-color: #1f1f1f;
+    border-radius: 5px;
+}
+
+/* ************************************ */
+/* ستايل النافذة المنبثقة (Popup) */
+/* ************************************ */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none; /* مخفي افتراضياً */
+    justify-content: center;
+    align-items: center;
+    z-index: 200;
+}
+
+/* لإظهار النافذة عند الضغط على الرابط (باستخدام :target) */
+.popup-overlay:target {
+    display: flex;
+}
+
+.popup-content {
+    background-color: #1e1e1e;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+    position: relative;
+    text-align: center;
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-size: 30px;
+    color: #aaa;
+    text-decoration: none;
+    line-height: 1;
+}
+
+/* ستايل أزرار الانضمام */
+.join-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 15px 0;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: bold;
+    color: white;
+    transition: opacity 0.3s;
+}
+
+.join-btn:hover {
+    opacity: 0.8;
+}
+
+.telegram-btn {
+    background-color: #229ED9;
+}
+
+.youtube-btn {
+    background-color: #FF0000;
+}
+
+.whatsapp-btn {
+    background-color: #25D366;
+}

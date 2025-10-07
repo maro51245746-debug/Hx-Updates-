@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOBI - المركز الشخصي</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+
+    <script>
+      // استبدل القيم هنا بالقيم الحقيقية من مشروعك في Firebase
+      const firebaseConfig = {
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_PROJECT_ID.appspot.com",
+        messagingSenderId: "YOUR_SENDER_ID",
+        appId: "YOUR_APP_ID"
+      };
+
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.firestore();
+    </script>
+    
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">TOBI</div>
+        <a href="#join-popup" class="login-btn">انضم إلينا</a>
+    </header>
+
+    <main class="content-area">
+        
+        <div class="ad-container">
+            <p>مساحة إعلانية علوية | AD SPACE</p>
+        </div>
+        
+        <article class="post-card" id="post-1">
+            <div class="post-header">
+                <img src="https://files.catbox.moe/65ipmq.jpg" alt="صورة بروفايل TOBI" class="profile-avatar">
+                <div class="post-info">
+                    <span class="username">TOBI</span>
+                    <span class="post-date">منشور حصري</span>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <p class="post-text">أول لما زيارات الموقع توصل **100** هنزل **ملف كراش مجاني** هنا ف الموقع! تابعوا عداد المشاهدات وشاركوا الموقع! 💪</p>
+            </div>
+
+            <div class="post-actions">
+                <span class="view-count" id="views-1">... جاري التحميل ...</span>
+            </div>
+        </article>
+        
+        <div class="ad-container">
+            <p>مساحة إعلانية سفلية | AD SPACE</p>
+        </div>
+        
+    </main>
+
+    <div id="join-popup" class="popup-overlay">
+        <div class="popup-content">
+            <a href="#" class="close-btn">&times;</a>
+            <h2 style="color:#007bff; margin-bottom: 20px;">انضم إلينا الآن</h2>
+            
+            <a href="https://t.me/flashaudio" target="_blank" class="join-btn telegram-btn">
+                انضم إلى تيليجرام
+            </a>
+            
+            <a href="https://youtube.com/@tobi_v9?si=QI7qdeI6l5MANaeU" target="_blank" class="join-btn youtube-btn">
+                انضم إلى قناة اليوتيوب
+            </a>
+            
+            <a href="https://whatsapp.com/channel/0029Vb2QAwr17EmtV7jvyh1q" target="_blank" class="join-btn whatsapp-btn">
+                انضم إلى قناة الواتس
+            </a>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
