@@ -1,15 +1,15 @@
-// Function to get a unique identifier for the user (to prevent repeat voting)
+// دالة للحصول على معرف فريد للمستخدم (لمنع التصويت المتكرر)
 function getUserId() {
     let userId = localStorage.getItem('pollUserId');
     if (!userId) {
-        // Generate a simple unique ID (using current time and a random number)
+        // إنشاء معرف فريد بسيط
         userId = Date.now().toString() + Math.random().toString(36).substring(2, 9);
         localStorage.setItem('pollUserId', userId);
     }
     return userId;
 }
 
-// Function to handle the real-time voting and display
+// الدالة الأساسية لمعالجة الاستفتاء وعرض النتائج
 function setupPoll(pollId) {
     const pollRef = db.collection('polls').doc(pollId);
     const userId = getUserId();
@@ -17,10 +17,12 @@ function setupPoll(pollId) {
     const resultDisplay = optionsContainer.querySelector('.poll-results-display');
     const buttons = optionsContainer.querySelectorAll('.poll-btn');
     
-    let userVoted = false;
+    // متغير لتتبع ما إذا كان المستخدم قد صوت بالفعل في الجلسة الحالية
+    let userVoted = false; 
 
-    // --- 1. DISPLAY RESULTS (Real-time listener) ---
-    // This function runs every time the poll data changes in Firebase
+    // ******************************************************************
+    // 1. الاستماع للتغييرات في Firebase (لعرض النتائج الفورية)
+    // ******************************************************************
     pollRef.onSnapshot(doc => {
         if (doc.exists) {
             const data = doc.data() || {};
@@ -28,101 +30,105 @@ function setupPoll(pollId) {
             const voters = data.voters || {};
             let totalVotes = 0;
             
-            // Calculate total votes
+            // حساب إجمالي الأصوات
             Object.values(votes).forEach(count => {
                 totalVotes += count;
             });
 
-            // Check if the current user has already voted
+            // التحقق من حالة التصويت للمستخدم الحالي
             if (voters[userId] || userVoted) {
-                // Hide buttons and show results
+                // إخفاء الأزرار وإظهار النتائج
                 buttons.forEach(btn => btn.style.display = 'none');
                 resultDisplay.style.display = 'block';
-                userVoted = true;
+                userVoted = true; 
             } else {
-                // Show buttons if user hasn't voted
+                // إظهار الأزرار إذا لم يصوت المستخدم بعد
                 buttons.forEach(btn => btn.style.display = 'block');
                 resultDisplay.style.display = 'none';
             }
             
-            // Update results display
+            // تحديث عرض النتائج
             resultDisplay.querySelectorAll('.poll-result').forEach(resultElement => {
                 const optionName = resultElement.getAttribute('data-option');
                 const voteCount = votes[optionName] || 0;
                 
-                // Calculate percentage
+                // حساب النسبة المئوية
                 const percentage = totalVotes > 0 ? (voteCount / totalVotes) * 100 : 0;
                 const percentageRounded = percentage.toFixed(0);
 
-                // Update text and bar width
+                // تحديث النص وعرض شريط التقدم
                 resultElement.querySelector('.poll-percentage').textContent = `${percentageRounded}%`;
                 resultElement.querySelector('.poll-bar').style.width = `${percentageRounded}%`;
             });
 
         } else {
-            // Document doesn't exist yet, initialize it
-            // This is handled by the initial click (see below)
+            // إذا لم تكن الوثيقة موجودة، يتم إنشاؤها عند أول تصويت
         }
     });
 
-    // --- 2. HANDLE VOTING (Button click) ---
+    // ******************************************************************
+    // 2. معالجة التصويت (النقر على الزر)
+    // ******************************************************************
     buttons.forEach(button => {
         button.addEventListener('click', () => {
-            if (userVoted) return; // Prevent double clicking
+            if (userVoted) return; // منع التصويت المزدوج
 
             const selectedOption = button.getAttribute('data-option');
-            userVoted = true; // Mark voted immediately on the client side
+            userVoted = true; // وضع علامة التصويت على الواجهة الأمامية فوراً
 
-            // Atomic update (transaction) to ensure accuracy
+            // استخدام Transaction لضمان دقة العدادات
             db.runTransaction(async (transaction) => {
                 const doc = await transaction.get(pollRef);
                 const data = doc.data() || {};
                 const currentVotes = data.options || {};
                 const currentVoters = data.voters || {};
 
-                // 1. Check again in case the user's vote status changed during the transaction
+                // 1. تأكد من أن المستخدم لم يصوت بعد
                 if (currentVoters[userId]) {
-                    throw "Already Voted"; // This stops the transaction
+                    throw "Already Voted"; 
                 }
 
-                // 2. Increment the vote count for the selected option
+                // 2. زيادة العداد للخيار المحدد
                 const newVoteCount = (currentVotes[selectedOption] || 0) + 1;
                 currentVotes[selectedOption] = newVoteCount;
                 
-                // 3. Mark the user as having voted
+                // 3. تسجيل معرف المستخدم (user ID) في قائمة المصوتين
                 currentVoters[userId] = selectedOption;
 
-                // Update the document
+                // تحديث الوثيقة
                 transaction.set(pollRef, { 
                     options: currentVotes,
                     voters: currentVoters
                 }, { merge: true });
 
             }).then(() => {
-                // Success: The onSnapshot listener will handle showing the final result
                 console.log("Vote successfully cast for:", selectedOption);
+                // الـ onSnapshot Listener سيتولى تحديث النتائج وعرضها
             }).catch((error) => {
                 if (error === "Already Voted") {
                     console.log("User tried to vote again, prevented.");
                 } else {
                     console.error("Voting transaction failed: ", error);
                 }
-                userVoted = false; // Allow another try if it was a generic error
+                userVoted = false; // إذا كان هناك خطأ، اسمح للمستخدم بالمحاولة مرة أخرى
             });
         });
     });
 }
 
+
+// ******************************************************************
+// الدالة الرئيسية: عند تحميل الصفحة
+// ******************************************************************
 document.addEventListener('DOMContentLoaded', () => {
     
     if (typeof db === 'undefined') {
-        console.error("Firebase 'db' is not defined.");
+        console.error("Firebase 'db' is not defined. تأكد من إعداد Firebase في index.html.");
         return;
     }
 
-    // A. تشغيل عداد المشاهدات القديم
+    // A. دالة عداد المشاهدات (غير معدلة، يتم استدعاؤها فقط هنا)
     function trackAndViewCount(postId) {
-        // ... (كود عداد المشاهدات كما هو في الملف السابق) ...
         const viewCountElement = document.getElementById(`views-${postId}`);
         const postRef = db.collection('posts').doc(postId);
 
@@ -148,8 +154,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // **********************************
-    // تشغيل المنطق:
+    // تشغيل المنطق لكلا المنشورين
     // **********************************
+    
     // 1. تشغيل الاستفتاء الجديد
     setupPoll('poll-1'); 
     
