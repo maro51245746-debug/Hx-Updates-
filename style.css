@@ -63,7 +63,7 @@ body {
 /* ستايل حاوية الإعلان */
 .ad-container {
     width: 100%;
-    height: 100px; /* حجم موحد للإعلان */
+    height: 100px;
     background-color: #3a3a3a;
     color: #ccc;
     display: flex;
@@ -75,7 +75,7 @@ body {
     text-align: center;
 }
 
-/* بطاقة المنشور الوحيدة */
+/* بطاقة المنشور */
 .post-card {
     background-color: #1e1e1e; 
     border-radius: 12px;
@@ -126,14 +126,81 @@ body {
     color: #4d94ff; 
 }
 
-/* شريط عرض المشاهدات */
-.post-actions {
+/* ************************************ */
+/* ستايلات الاستفتاء (Poll) */
+/* ************************************ */
+.poll-question {
+    font-size: 18px;
+    color: #007bff;
+    margin-bottom: 15px;
+}
+
+/* ستايل الأزرار قبل التصويت */
+.poll-btn {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: #2a2a2a;
+    color: white;
+    border: 1px solid #333;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+.poll-btn:hover {
+    background-color: #3a3a3a;
+}
+.poll-btn:active {
+    background-color: #007bff; /* لإعطاء إشارة بصرية عند الضغط */
+}
+
+/* ستايل عرض النتائج */
+.poll-results-display {
+    margin-top: 15px;
+}
+
+.poll-result {
     display: flex;
     align-items: center;
-    border-top: 1px solid #333;
-    padding-top: 10px;
-    margin-top: 10px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 5px 0;
+    font-size: 14px;
+    color: #ccc;
+    position: relative;
 }
+
+.poll-result > span:first-child {
+    z-index: 10;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.poll-result > span.poll-percentage {
+    z-index: 10;
+    color: #007bff;
+    font-weight: bold;
+}
+
+.poll-bar-container {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #333; /* خلفية الشريط (اللون الرمادي الداكن) */
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.poll-bar {
+    height: 100%;
+    background-color: #007bff; /* لون شريط التقدم */
+    transition: width 0.5s ease;
+}
+
 
 /* ستايل عداد المشاهدات */
 .view-count {
@@ -145,9 +212,7 @@ body {
     border-radius: 5px;
 }
 
-/* ************************************ */
-/* ستايل النافذة المنبثقة (Popup) */
-/* ************************************ */
+/* ستايل النافذة المنبثقة (Popup) - كما هو */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -155,13 +220,12 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.8);
-    display: none; /* مخفي افتراضياً */
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 200;
 }
 
-/* لإظهار النافذة عند الضغط على الرابط (باستخدام :target) */
 .popup-overlay:target {
     display: flex;
 }
@@ -187,7 +251,6 @@ body {
     line-height: 1;
 }
 
-/* ستايل أزرار الانضمام */
 .join-btn {
     display: block;
     width: 100%;
