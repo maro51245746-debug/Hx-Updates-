@@ -1,6 +1,7 @@
 /* إعادة تعيين بسيطة وخط عربي */
 * {
-    box-sizing: border-box;
+    /* التأكد من أن الأبعاد تحسب الحدود والهوامش الداخلية */
+    box-sizing: border-box; 
     margin: 0;
     padding: 0;
     font-family: 'Cairo', sans-serif; 
@@ -10,10 +11,10 @@
 body {
     background-color: #121212; 
     color: #E0E0E0; 
+    /* التأكد من الاتجاه الصحيح للغة العربية */
     direction: rtl; 
     text-align: right;
     padding-top: 60px; 
-    /* تم حذف: opacity: 0; و transition: opacity 0.5s ease-in-out; */
 }
 
 
@@ -86,7 +87,9 @@ body {
 
 /* منطقة المحتوى الرئيسية */
 .content-area {
+    /* ضمان أن لا يزيد العرض عن 100% من الشاشة */
     max-width: 600px;
+    width: 100%; 
     margin: 20px auto;
     padding: 0 10px;
 }
@@ -110,6 +113,7 @@ body {
 .post-card {
     background-color: #1e1e1e; 
     border-radius: 12px;
+    /* التأكد من أن البادينج (الهوامش الداخلية) لا تتسبب في توسيع البطاقة */
     padding: 15px;
     margin-bottom: 20px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
@@ -151,7 +155,7 @@ body {
 
 /* ستايل الفيديو */
 .post-video {
-    width: 100%;
+    width: 100%; /* هذا يضمن أن الفيديو لا يتجاوز عرض البطاقة */
     max-height: 500px;
     border-radius: 8px;
     margin-bottom: 15px;
