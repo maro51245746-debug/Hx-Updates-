@@ -187,8 +187,29 @@ align-items:center;
 
 <script src="script.js"></script>
 <script>
+let rewardSeconds = 30;
+let rewardInterval;
+
 function startAttack() {
-    window.open("https://shrinkme.click/tobi_3b", "_blank");
+    document.getElementById("reward-ad").style.display = "flex";
+    rewardSeconds = 30;
+    document.getElementById("reward-timer").innerText = rewardSeconds;
+
+    rewardInterval = setInterval(() => {
+        rewardSeconds--;
+        document.getElementById("reward-timer").innerText = rewardSeconds;
+
+        if (rewardSeconds <= 0) {
+            clearInterval(rewardInterval);
+            document.getElementById("reward-ad").style.display = "none";
+            rewardUser();
+        }
+    }, 1000);
+}
+
+function rewardUser() {
+    // هنا السكريبت بتاعك بيحسب النقاط
+    console.log("تم مشاهدة الإعلان كامل");
 }
 </script>
 </body>
