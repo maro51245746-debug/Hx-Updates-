@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>إضافة لاعب - HX</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+        .box { background: #2c3e50; padding: 30px; border-radius: 10px; max-width: 400px; margin: auto; border: 1px solid #444; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border-radius: 5px; border: none; }
+        button { background: #27ae60; color: white; border: none; padding: 15px; width: 100%; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .back-link { display: inline-block; margin-top: 20px; color: #f1c40f; text-decoration: none; border: 1px solid #f1c40f; padding: 10px 20px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('adminHX') !== 'verified') { window.location.href = 'admin.html'; }
+    </script>
+
+    <h1>إضافة لاعب جديد 👤</h1>
+    <div class="box">
+        <input type="text" id="n" placeholder="اسم اللاعب الكامل">
+        <input type="email" id="e" placeholder="البريد الإلكتروني">
+        <input type="text" id="p" placeholder="كلمة السر">
+        <button onclick="addNew()">+ إنشاء الحساب الآن</button>
+    </div>
+    <a href="admin.html" class="back-link">🏠 العودة للوحة التحكم</a>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
+            authDomain: "hx-cash-hunt.firebaseapp.com",
+            databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const db = firebase.database();
+
+        function addNew() {
+            const name = document.getElementById('n').value;
+            const email = document.getElementById('e').value;
+            const pass = document.getElementById('p').value;
+            if(!name || !email || !pass) return alert("أكمل البيانات");
+
+            auth.createUserWithEmailAndPassword(email, pass).then(u => {
+                db.ref('users/' + u.user.uid).set({
+                    name, email, passwordText: pass, points: 0, level: 1, xp: 0, adsWatched: 0
+                }).then(() => {
+                    alert("تمت إضافة اللاعب بنجاح!");
+                    document.getElementById('n').value = "";
+                    document.getElementById('e').value = "";
+                    document.getElementById('p').value = "";
+                });
+            }).catch(e => alert(e.message));
+        }
+    </script>
+</body>
+</html>

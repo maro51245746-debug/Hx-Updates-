@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>الأرشيف - HX</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+        .item { background: #2c3e50; padding: 15px; margin: 10px 0; border-radius: 8px; text-align: right; border-right: 5px solid; max-width: 600px; margin: 10px auto; }
+        .success { border-color: #2ecc71; }
+        .fail { border-color: #e74c3c; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #f1c40f; text-decoration: none; border: 1px solid #f1c40f; padding: 10px 20px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('adminHX') !== 'verified') { window.location.href = 'admin.html'; }
+    </script>
+
+    <h1>سجل العمليات السابقة (الأرشيف) 📜</h1>
+    <a href="admin.html" class="back-link">🏠 العودة للوحة التحكم</a>
+    <div id="archive-list"></div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
+            authDomain: "hx-cash-hunt.firebaseapp.com",
+            databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('archive').on('value', s => {
+            const list = document.getElementById('archive-list');
+            list.innerHTML = "";
+            const data = s.val();
+            if(!data) list.innerHTML = "الأرشيف فارغ حالياً.";
+            Object.keys(data).reverse().forEach(id => {
+                const a = data[id];
+                const cls = a.status.includes('الدفع') ? "success" : "fail";
+                list.innerHTML += `
+                <div class="item ${cls}">
+                    <strong>${a.name}</strong> - صاحب المحفظة: ${a.accName}<br>
+                    المبلغ: ${a.points} نقطة | الرقم: ${a.phone}<br>
+                    الحالة: ${a.status} | التاريخ: ${a.date}<br>
+                    ${a.reason ? "<span style='color:#e74c3c'>السبب: " + a.reason + "</span>" : ""}
+                </div>`;
+            });
+        });
+    </script>
+</body>
+</html>

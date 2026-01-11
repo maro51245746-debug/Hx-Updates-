@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>طلبات السحب - HX</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+        .box { background: #2c3e50; padding: 15px; border-radius: 10px; text-align: right; max-width: 600px; margin: auto; }
+        .item { background: #34495e; padding: 15px; margin: 10px 0; border-radius: 8px; border-right: 5px solid #f1c40f; }
+        button { padding: 8px 15px; cursor: pointer; border-radius: 5px; border: none; font-weight: bold; margin: 5px; }
+        .btn-pay { background: #2ecc71; color: white; }
+        .btn-rej { background: #e74c3c; color: white; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #f1c40f; text-decoration: none; border: 1px solid #f1c40f; padding: 10px 20px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <script>
+        if (localStorage.getItem('adminHX') !== 'verified') { window.location.href = 'admin.html'; }
+    </script>
+
+    <h1>إدارة طلبات السحب المعلقة 📩</h1>
+    <a href="admin.html" class="back-link">🏠 العودة للوحة التحكم</a>
+    
+    <div id="req-list" class="box">جاري التحميل...</div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
+            authDomain: "hx-cash-hunt.firebaseapp.com",
+            databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        db.ref('withdrawRequests').on('value', s => {
+            const list = document.getElementById('req-list');
+            list.innerHTML = "";
+            const data = s.val();
+            if(!data) list.innerHTML = "لا توجد طلبات معلقة حالياً.";
+            for(let id in data) {
+                const r = data[id];
+                list.innerHTML += `
+                    <div class="item">
+                        <strong>اللاعب:</strong> ${r.name}<br>
+                        <strong>صاحب المحفظة:</strong> <span style="color:#f1c40f">${r.accName}</span><br>
+                        <strong>الرقم:</strong> ${r.phone} | <strong>النقاط:</strong> ${r.points}<br>
+                        <button class="btn-pay" onclick="approve('${id}','${r.uid}',${r.points},'${r.phone}','${r.accName}','${r.name}')">✅ تم الدفع والخصم</button>
+                        <button class="btn-rej" onclick="reject('${id}','${r.uid}',${r.points},'${r.accName}','${r.name}','${r.phone}')">❌ رفض الطلب</button>
+                    </div>`;
+            }
+        });
+
+        window.approve = function(reqId, uid, pts, phone, accName, name) {
+            if(!confirm("تأكيد دفع " + pts + " نقطة؟")) return;
+            db.ref('users/' + uid + '/points').transaction(c => (c || 0) - pts).then(() => {
+                db.ref('archive').push({ name, accName, phone, points: pts, status: "تم الدفع ✅", date: new Date().toLocaleString() });
+                db.ref('notifications/' + uid).push({ message: `تم الموافقة على تحويل ${pts} نقطة بنجاح.`, status: "مقبول", date: new Date().toLocaleString() });
+                db.ref('withdrawRequests/' + reqId).remove();
+            });
+        }
+
+        window.reject = function(reqId, uid, pts, accName, name, phone) {
+            const msg = prompt("سبب الرفض:");
+            if(!msg) return;
+            db.ref('archive').push({ name, accName, phone, points: pts, status: "مرفوض ❌", reason: msg, date: new Date().toLocaleString() });
+            db.ref('notifications/' + uid).push({ message: `تم رفض طلب السحب. السبب: ${msg}`, status: "مرفوض", date: new Date().toLocaleString() });
+            db.ref('withdrawRequests/' + reqId).remove();
+        }
+    </script>
+</body>
+</html>

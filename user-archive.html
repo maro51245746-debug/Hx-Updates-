@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إشعاراتي - HX</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { background: #1a1a1a; color: white; padding: 20px; font-family: sans-serif; }
+        .box { background: #2c3e50; padding: 15px; border-radius: 10px; margin-bottom: 15px; border: 1px solid #444; }
+        .notif-item { padding: 12px; border-bottom: 1px solid #444; text-align: right; }
+        .status-success { color: #2ecc71; font-weight: bold; }
+        .status-error { color: #e74c3c; font-weight: bold; }
+        .back-btn { display: block; width: 100%; padding: 12px; background: #f1c40f; color: black; text-align: center; text-decoration: none; font-weight: bold; border-radius: 8px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">🏠 العودة للعب</a>
+
+    <h2>🔔 إشعارات وأرشيف التحويلات</h2>
+    <div id="notifications-list">جاري تحميل سجلاتك...</div>
+
+    <script>
+        const firebaseConfig = {
+          apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
+          authDomain: "hx-cash-hunt.firebaseapp.com",
+          databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        const auth = firebase.auth();
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // جلب الإشعارات الخاصة باللاعب
+                db.ref('notifications/' + user.uid).on('value', (snapshot) => {
+                    const list = document.getElementById('notifications-list');
+                    const data = snapshot.val();
+                    if(!data) {
+                        list.innerHTML = "<p style='text-align:center;'>لا يوجد إشعارات حتى الآن.</p>";
+                        return;
+                    }
+                    list.innerHTML = "";
+                    Object.values(data).reverse().forEach(notif => {
+                        let statusClass = notif.status.includes('الموافقة') || notif.status.includes('مقبول') ? 'status-success' : 'status-error';
+                        list.innerHTML += `
+                        <div class="box notif-item">
+                            <small style="color:#aaa;">${notif.date}</small><br>
+                            <p style="margin: 5px 0;">${notif.message}</p>
+                            الحالة: <span class="${statusClass}">${notif.status}</span>
+                        </div>`;
+                    });
+                });
+            } else {
+                window.location.href = 'index.html';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>تحقق</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+</head>
+<script>
+(async () => {
+  // منع الدخول المباشر
+  if (!document.referrer.includes("shortlink")) {
+    window.location.href = "index.html";
+    return;
+  }
+
+  // منع التكرار (مرة كل دقيقة)
+  const last = localStorage.getItem("lastReward");
+  const now = Date.now();
+  if (last && now - last < 60000) {
+    window.location.href = "game.html";
+    return;
+  }
+
+  // طلب إضافة النقاط من السيرفر
+  await fetch("addPoints.php", {
+    method: "POST",
+    credentials: "include"
+  });
+
+  localStorage.setItem("lastReward", now);
+
+  // رجوع فوري لصفحة اللعب
+  window.location.replace("game.html");
+})();
+</script>
+<body>
+
+<script>
+/* ================= Firebase ================= */
+const firebaseConfig = {
+apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
+authDomain: "hx-cash-hunt.firebaseapp.com",
+databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
+projectId: "hx-cash-hunt",
+storageBucket: "hx-cash-hunt.firebasestorage.app",
+messagingSenderId: "829449009252",
+appId: "1:829449009252:web:b0e4a03f170bb61d7a4771"
+};
+
+if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.database();
+
+/* ================= التحقق ================= */
+auth.onAuthStateChanged(user => {
+    if (!user) {
+        returnBack();
+        return;
+    }
+
+    const uid = user.uid;
+    const now = Date.now();
+
+    db.ref("pendingRewards/" + uid).once("value").then(snap => {
+        if (!snap.exists()) {
+            returnBack();
+            return;
+        }
+
+        const data = snap.val();
+
+        // مستخدم قبل كده
+        if (data.used === true) {
+            returnBack();
+            return;
+        }
+
+        // دخل مباشر (أقل من 15 ثانية)
+        if (now - data.time < 15000) {
+            returnBack();
+            return;
+        }
+
+        // إضافة النقاط
+        db.ref("users/" + uid + "/points").transaction(p => {
+            return (p || 0) + 10;
+        });
+
+        // تعليم كمستخدم
+        db.ref("pendingRewards/" + uid).update({
+            used: true,
+            completedAt: now
+        });
+
+        returnBack();
+    });
+});
+
+function returnBack(){
+    window.location.replace("index.html");
+}
+</script>
+
+</body>
+</html>

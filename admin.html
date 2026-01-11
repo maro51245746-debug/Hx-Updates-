@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة التحكم الرئيسية - HX</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: white; padding: 20px; text-align: center; }
+        nav { background: #2c3e50; padding: 15px; border-radius: 10px; margin-bottom: 20px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+        nav a { color: #f1c40f; text-decoration: none; font-weight: bold; padding: 8px 15px; border: 1px solid #f1c40f; border-radius: 5px; background: rgba(241, 196, 15, 0.1); }
+        nav a:hover { background: #f1c40f; color: black; }
+        .box { background: #2c3e50; padding: 20px; border-radius: 10px; text-align: right; border: 1px solid #444; }
+        .search-box { margin-bottom: 20px; }
+        input { padding: 10px; width: 70%; border-radius: 5px; border: 1px solid #444; background: #1a1a1a; color: white; }
+        .user-item { background: #34495e; padding: 15px; margin: 10px 0; border-radius: 8px; border-right: 5px solid #f1c40f; }
+        .controls { display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+        button { cursor: pointer; border: none; border-radius: 5px; padding: 10px 15px; font-weight: bold; }
+        .btn-update { background: #2980b9; color: white; }
+        .btn-del { background: #e74c3c; color: white; }
+        #admin-lock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div id="admin-lock">
+        <h2>🔒 لوحة تحكم الإدارة</h2>
+        <input type="password" id="admin-pass" placeholder="أدخل كلمة السر" style="width:200px;">
+        <button onclick="checkPass()" style="background:#27ae60; color:white; margin-top:10px; width:220px;">دخول</button>
+    </div>
+
+    <div id="content" class="hidden">
+        <nav>
+            <a href="admin.html">🏠 الرئيسية</a>
+            <a href="add-player.html">➕ إضافة لاعب</a>
+            <a href="requests.html">📩 طلبات السحب</a>
+            <a href="archive.html">📜 الأرشيف</a>
+            <button onclick="logoutAdmin()" style="background:#c0392b; color:white; padding:5px 10px;">تسجيل خروج</button>
+        </nav>
+
+        <h1>إدارة اللاعبين 👥</h1>
+        <div class="search-box">
+            <input type="text" id="search-input" placeholder="ابحث بإيميل اللاعب..." oninput="searchUser()">
+        </div>
+        <div id="users-list" class="box">جاري التحميل...</div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
+            authDomain: "hx-cash-hunt.firebaseapp.com",
+            databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // نظام التحقق من الجلسة
+        if (localStorage.getItem('adminHX') === 'verified') {
+            document.getElementById('admin-lock').classList.add('hidden');
+            document.getElementById('content').classList.remove('hidden');
+        }
+
+        function checkPass() {
+            if(document.getElementById('admin-pass').value === "HX2026") {
+                localStorage.setItem('adminHX', 'verified');
+                location.reload();
+            } else { alert("كلمة السر خاطئة!"); }
+        }
+
+        function logoutAdmin() {
+            localStorage.removeItem('adminHX');
+            location.reload();
+        }
+
+        function searchUser() {
+            const term = document.getElementById('search-input').value.toLowerCase();
+            renderUsers(term);
+        }
+
+        function renderUsers(filter = "") {
+            db.ref('users').on('value', s => {
+                const list = document.getElementById('users-list');
+                list.innerHTML = "";
+                const data = s.val();
+                for(let id in data) {
+                    const u = data[id];
+                    if(u.email.toLowerCase().includes(filter)) {
+                        list.innerHTML += `
+                        <div class="user-item">
+                            <strong>${u.name}</strong><br>
+                            <small>${u.email}</small><br>
+                            💰 النقاط: ${u.points} | 📺 إعلانات: ${u.adsWatched || 0}<br>
+                            <div class="controls">
+                                <input type="number" id="amt-${id}" placeholder="الكمية" style="width:100px;">
+                                <button class="btn-update" onclick="adjust('${id}', ${u.points}, 'add')">إضافة +</button>
+                                <button class="btn-update" onclick="adjust('${id}', ${u.points}, 'sub')" style="background:#e67e22;">خصم -</button>
+                                <button class="btn-del" onclick="del('${id}')">حذف</button>
+                            </div>
+                        </div>`;
+                    }
+                }
+            });
+        }
+
+        window.adjust = function(id, current, type) {
+            const val = parseInt(document.getElementById('amt-' + id).value);
+            if(!val) return;
+            let newVal = (type === 'add') ? current + val : current - val;
+            db.ref('users/' + id).update({ points: newVal < 0 ? 0 : newVal });
+        }
+
+        window.del = function(id) { if(confirm("حذف نهائي؟")) db.ref('users/' + id).remove(); }
+        renderUsers();
+    </script>
+</body>
+</html>
