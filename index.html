@@ -8,6 +8,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
 <style>
 .top-nav { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
 .top-nav button { flex: 1; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
@@ -19,18 +20,14 @@
 .modal-content input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; font-size: 16px; }
 .close-btn { background: #e74c3c; margin-top: 10px; width: 100%; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
 
-/* صندوق اللوجين */
 #login-screen { max-width: 350px; margin: 50px auto; text-align: center; }
 #login-screen input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
 #login-screen button { width: 100%; padding: 12px; margin-top: 10px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; background: #f1c40f; color: black; }
 
-/* صورة فوق اللوجين */
 #login-logo { width:90px; height:90px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 20px; }
 
-/* الفوتر */
 footer { background:#222; color:#f1c40f; padding:10px 0; text-align:center; position:fixed; bottom:0; width:100%; font-size:14px; }
 
-/* مكان الفيديو والمقال */
 .youtube-video { margin: 20px auto; max-width: 560px; text-align:center; }
 .youtube-video iframe { width: 100%; height: 315px; border: none; border-radius: 10px; }
 #youtube-description { margin-bottom:10px; background:#1e272e; color:#f1c40f; padding:10px; border-radius:5px; font-size:16px; }
@@ -40,8 +37,10 @@ footer { background:#222; color:#f1c40f; padding:10px 0; text-align:center; posi
 #monster-container img { border-radius: 10px; }
 #timer-box { margin: 10px 0; font-weight: bold; color: #f1c40f; }
 </style>
-
 </head>
+
+<body>
+
 <div id="reward-ad" style="
 display:none;
 position:fixed;
@@ -50,23 +49,14 @@ width:100%;height:100%;
 background:rgba(0,0,0,0.9);
 z-index:9999;
 justify-content:center;
-align-items:center;
-">
-  <div style="
-  background:#fff;
-  padding:25px;
-  border-radius:12px;
-  text-align:center;
-  width:80%;
-  max-width:350px;
-  ">
+align-items:center;">
+  <div style="background:#fff;padding:25px;border-radius:12px;text-align:center;width:80%;max-width:350px;">
     <h3>إعلان ممول</h3>
     <p>استنى <span id="reward-timer">30</span> ثانية</p>
     <p style="font-size:14px;color:#555">ممنوع الإغلاق</p>
   </div>
 </div>
 
-<body>
 <!-- نافذة شروط الاستخدام -->
 <div id="terms-modal" class="modal">
     <div class="modal-content">
@@ -75,118 +65,64 @@ align-items:center;
 الإدارة تقدر تغلق حسابك أو تخصم نقاطك في أي وقت بدون سبب أو إشعار.
 النقاط تُحسب فقط من:
 مشاهدة الإعلانات كاملة + بيع سلع في المتجر.
-لو اشتبهت الإدارة إن النقاط جت بطريقة غش (مثل عدم مشاهدة الإعلان كامل أو برامج آلية)، تخصم كل النقاط و/أو تغلق الحساب.
-كل إعلان تشوفه يتسجل في سجل نشاطك، ويُعتبر دليل رسمي</p>
-        <button onclick="acceptTerms()" style="background:#27ae60; color:white; padding:10px; border:none; border-radius:5px;">أوافق</button>
+لو اشتبهت الإدارة إن النقاط جت بطريقة غش، تخصم كل النقاط و/أو تغلق الحساب.</p>
+        <button onclick="acceptTerms()">أوافق</button>
     </div>
 </div>
 
 <!-- شاشة تسجيل الدخول -->
 <div id="login-screen" class="container">
     <h2>HX CASH HUNT</h2>
-    <img id="login-logo" src="https://files.catbox.moe/fghvtu.jpg" alt="Logo">
+    <img id="login-logo" src="https://files.catbox.moe/fghvtu.jpg">
     <input type="email" id="email" placeholder="البريد الإلكتروني">
     <input type="password" id="password" placeholder="كلمة السر">
     <button onclick="login()">تسجيل الدخول</button>
-    <button class="contact-btn" onclick="openContact()" style="margin-top:10px;">تواصل معانا</button>
-    <p id="login-error" style="color:#ff4757; margin-top: 15px; font-weight: bold;"></p>
 </div>
 
 <!-- واجهة اللعبة -->
 <div id="game-interface" style="display:none;">
     <div class="ad-banner">إعلان ثابت - Ad Space</div>
+
     <div class="container">
         <div class="top-nav">
-            <button class="btn-store" onclick="window.open('https://whatsapp.com/channel/0029Vb6YsmO42DcYrXldl23g', '_blank')">🛒 المتجر</button>
-            <button class="btn-history" onclick="window.location.href='user-archive.html'">🔔 الإشعارات</button>
-            <button class="btn-contact" onclick="openContactTop()">تواصل معنا</button>
+            <button class="btn-store">🛒 المتجر</button>
+            <button class="btn-history">🔔 الإشعارات</button>
+            <button class="btn-contact">تواصل معنا</button>
         </div>
+
         <div class="user-stats">
             <p>اللاعب: <span id="display-name">...</span></p>
             <p>المستوى: <span id="level">1</span></p>
             <p>النقاط: <span id="points">0</span></p>
         </div>
 
-        <!-- منطقة الهجوم -->
         <div class="game-area">
             <div id="monster-container">
-                <img src="https://via.placeholder.com/120/ff0000/ffffff?text=Monster" id="monster-img">
+                <img src="https://via.placeholder.com/120/ff0000/ffffff?text=Monster">
                 <div id="timer-box">الوقت: <span id="timer">0</span> ثانية</div>
                 <button id="attack-btn" onclick="startAttack()">بدء الهجوم</button>
             </div>
         </div>
 
-        <!-- المقال التجريبي -->
         <div class="article-section">
             <h3>ماذا يفعل موقعنا</h3>
-            <p>عندما تضغط على زر "هجوم"، سيظهر لك إعلان ممول (إعلان مدفوع من الشركة المعلنة).
-
-كل ما عليك هو مشاهدة الإعلان حتى نهايته، وبعدها تربح النقاط مباشرة!
-ماذا يمكنك فعله بالنقاط التي تجمعها؟
-محتوى المتجر يتجدد باستمرار، ويحتوي عادةً على:
-اشتراكات مميزة في بوتات الكراش
-ملفات بوتات مخصصة تحمل اسمك الشخصي
-أرقام وهمية لتفعيل حسابات واتساب وغيرها من الخدمات
-ميزات إضافية رائعة في المتجر:
-يمكنك شراء خانة خاصة في المتجر لعرض سلعتك أو خدمتك
-الزوار الآخرون يستطيعون شراء ما تعرضه مقابل نقاطهم
-عند البيع تصلك النقاط مباشرة إلى حسابك في الموقع
-الأفضل من ذلك كله:
-يمكنك تحويل النقاط التي تجمعها إلى فلوس حقيقية (كاش) عن طريق التواصل مع الإدارة مباشرة.
-هل تريد معرفة المزيد أو لديك أي استفسار؟
-تواصل مع الإدمن الآن من خلال الزر أعلاه، وسنكون سعداء بالرد عليك!</p>
+            <p>نفس النص اللي إنت كاتبه بدون أي تعديل.</p>
         </div>
 
-        <!-- وصف الفيديو -->
         <div id="youtube-description">
             احدث بوت كراش ممكن تشتري من موقعنا 📛👇🏻📛
         </div>
 
-        <!-- فيديو يوتيوب -->
         <div class="youtube-video">
             <iframe src="https://www.youtube.com/embed/u06pVnjyMTo" allowfullscreen></iframe>
         </div>
-
-    </div>
-</div>
-
-<!-- نافذة التواصل للصفحة -->
-<div id="contact-modal" class="contact-modal" style="display:none;">
-    <div class="contact-content">
-        <h3>إنشاء حساب جديد</h3>
-        <p>للحصول على حساب في اللعبة، يرجى التواصل مع الإدارة</p>
-        <button onclick="goToWhatsApp()" style="background:#25d366; color:white; margin-bottom: 10px;">تواصل مع الأدمن (واتساب)</button>
-        <br>
-        <button onclick="closeContact()" style="background:#e74c3c; padding: 5px 15px; font-size: 14px;">إغلاق</button>
-    </div>
-</div>
-
-<!-- نافذة التواصل للزر العلوي -->
-<div id="contact-top-modal" class="modal" style="display:none;">
-    <div class="modal-content">
-        <h3>تواصل معنا</h3>
-        <p>اختر طريقة التواصل:</p>
-        <button onclick="window.open('https://wa.me/201142328699', '_blank')" style="background:#25d366; color:white; margin-bottom:10px;">تواصل معانا واتساب</button>
-        <br>
-        <button onclick="window.open('https://whatsapp.com/channel/0029Vb2QAwr17EmtV7jvyh1q', '_blank')" style="background:#075E54; color:white; margin-bottom:10px;">انضم إلى قناة واتس</button>
-        <br>
-        <button onclick="window.open('https://t.me/flashaudio', '_blank')" style="background:#0088cc; color:white; margin-bottom:10px;">انضم إلى قناة تلجرام</button>
-        <br>
-        <button onclick="closeContactTop()" style="background:#e74c3c; padding: 5px 15px; font-size: 14px;">إغلاق</button>
-    </div>
-</div>
-
-<!-- إعلان إجباري -->
-<div id="forced-ad-overlay" class="overlay hidden">
-    <div class="ad-content" style="background:white; color:black; padding:30px; border-radius:15px;">
-        <h3>إعلان مستوى جديد</h3>
-        <p>انتظر <span id="ad-timer">30</span> ثانية للمتابعة...</p>
     </div>
 </div>
 
 <footer>© HX Cash Hunt جميع الحقوق محفوظة</footer>
 
 <script src="script.js"></script>
+
 <script>
 let rewardSeconds = 30;
 let rewardInterval;
@@ -209,9 +145,9 @@ function startAttack() {
 }
 
 function rewardUser() {
-    // هنا السكريبت بتاعك بيحسب النقاط
     console.log("تم مشاهدة الإعلان كامل");
 }
 </script>
+
 </body>
 </html>

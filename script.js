@@ -16,9 +16,9 @@ const auth = firebase.auth();
 let currentUser = null;
 let userData = {};
 
-const REWARD = 10;       // نقاط لكل إعلان
-const COOLDOWN = 60000;  // دقيقة بين كل هجوم
-const AD_TIME = 30;       // ثواني الإعلان
+const REWARD = 10;
+const COOLDOWN = 60000;
+const AD_TIME = 30;
 
 auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
@@ -55,32 +55,50 @@ function updateUI() {
     document.getElementById("level").innerText = userData.level || 1;
 }
 
-/* ===== زر الهجوم مع Rewarded Ad ===== */
-window.startAttack = function () {
-    if (!currentUser) return;
+/* ===== تحميل إعلان al5sm ===== */
+function loadRealAd() {
+    const container = document.getElementById("real-ad-container");
+    if (!container) return;
 
-    const uid = currentUser.uid;
-    const now = Date.now();
+    container.innerHTML = "";
 
-    db.ref("lastAttack/" + uid).once("value").then(snap => {
-        if (snap.exists() && now - snap.val() < COOLDOWN) {
-            alert("استنى دقيقة قبل الهجوم تاني");
-            return;
-        }
+    const s = document.createElement("script");
+    s.dataset.zone = "10450260";
+    s.src = "https://al5sm.com/tag.min.js";
+    s.async = true;
 
-        // سجل الوقت الحالي للهجوم
-        db.ref("lastAttack/" + uid).set(now);
-        startRewardAd();
-    });
-};
+    container.appendChild(s);
+}
+
+/* ===== زر الهجوم (من غير كسر الموجود في index) ===== */
+if (!window.startAttack) {
+    window.startAttack = function () {
+        if (!currentUser) return;
+
+        const uid = currentUser.uid;
+        const now = Date.now();
+
+        db.ref("lastAttack/" + uid).once("value").then(snap => {
+            if (snap.exists() && now - snap.val() < COOLDOWN) {
+                alert("استنى دقيقة قبل الهجوم تاني");
+                return;
+            }
+
+            db.ref("lastAttack/" + uid).set(now);
+            startRewardAd();
+        });
+    };
+}
 
 function startRewardAd() {
     const ad = document.getElementById("reward-ad");
     const timerEl = document.getElementById("reward-timer");
     let timeLeft = AD_TIME;
 
-    timerEl.innerText = timeLeft;
     ad.style.display = "flex";
+    timerEl.innerText = timeLeft;
+
+    loadRealAd();
 
     const interval = setInterval(() => {
         timeLeft--;
@@ -102,6 +120,11 @@ function giveReward() {
         userData.points = newPoints;
         updateUI();
     });
+}
+
+/* ===== ربط rewardUser مع index.html ===== */
+if (!window.rewardUser) {
+    window.rewardUser = giveReward;
 }
 
 /* ===== Login ===== */
