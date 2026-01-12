@@ -1,143 +1,128 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyAW9IQZZXks-09bSfAffXVxrgejYfw0O74",
-  authDomain: "hx-cash-hunt.firebaseapp.com",
-  databaseURL: "https://hx-cash-hunt-default-rtdb.firebaseio.com/",
-  projectId: "hx-cash-hunt",
-  storageBucket: "hx-cash-hunt.firebasestorage.app",
-  messagingSenderId: "829449009252",
-  appId: "1:829449009252:web:b0e4a03f170bb61d7a4771"
-};
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HX Cash Hunt - الرئيسية</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+<style>
+/* ===== ستايل الصفحة ===== */
+.top-nav { display: flex; gap: 10px; margin-bottom: 20px; justify-content: center; }
+.top-nav button { flex: 1; padding: 12px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; }
+.btn-store { background: #f39c12; color: black; }
+.btn-history { background: #3498db; color: white; }
+.btn-contact { background:#25d366; color:white; }
+.modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background: #34495e; padding: 25px; border-radius: 15px; width: 85%; max-width: 400px; text-align: center; border: 2px solid #f1c40f; color: white; }
+.modal-content input { width: 90%; padding: 10px; margin: 10px 0; border-radius: 5px; border: none; font-size: 16px; }
+.close-btn { background: #e74c3c; margin-top: 10px; width: 100%; color: white; border: none; padding: 10px; cursor: pointer; border-radius: 5px; }
 
-const db = firebase.database();
-const auth = firebase.auth();
+#login-screen { max-width: 350px; margin: 50px auto; text-align: center; }
+#login-screen input { width: 100%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #ccc; font-size: 16px; }
+#login-screen button { width: 100%; padding: 12px; margin-top: 10px; font-weight: bold; border-radius: 8px; border: none; cursor: pointer; background: #f1c40f; color: black; }
 
-let currentUser = null;
-let userData = {};
+#login-logo { width:90px; height:90px; border-radius:50%; object-fit:cover; display:block; margin:0 auto 20px; }
 
-const REWARD = 10;
-const COOLDOWN = 60000;
-const AD_TIME = 30;
+footer { background:#222; color:#f1c40f; padding:10px 0; text-align:center; position:fixed; bottom:0; width:100%; font-size:14px; }
 
-auth.setPersistence(firebase.auth.Auth.Persistence.SESSION);
+.youtube-video { margin: 20px auto; max-width: 560px; text-align:center; }
+.youtube-video iframe { width: 100%; height: 315px; border: none; border-radius: 10px; }
+#youtube-description { margin-bottom:10px; background:#1e272e; color:#f1c40f; padding:10px; border-radius:5px; font-size:16px; }
 
-/* ===== Auth ===== */
-auth.onAuthStateChanged(user => {
-    if (!user) return showLogin();
+.article-section { margin: 20px auto; max-width: 800px; background: #2c3e50; padding: 20px; border-radius: 10px; color: #f1c40f; font-size:16px; }
+.game-area { margin: 20px auto; text-align: center; }
+#monster-container img { border-radius: 10px; }
+#timer-box { margin: 10px 0; font-weight: bold; color: #f1c40f; }
+</style>
+</head>
 
-    db.ref("users/" + user.uid).once("value").then(snap => {
-        if (!snap.exists()) {
-            auth.signOut();
-            showLogin();
-        } else {
-            currentUser = user;
-            userData = snap.val();
-            showGame();
-            updateUI();
-        }
-    });
-});
+<body>
 
-function showLogin() {
-    document.getElementById("login-screen").style.display = "block";
-    document.getElementById("game-interface").style.display = "none";
-}
+<!-- إعلان الهجوم -->
+<div id="reward-ad" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:9999; justify-content:center; align-items:center;">
+  <div style="background:#fff; padding:25px; border-radius:12px; text-align:center; width:80%; max-width:350px;">
+    <h3>إعلان ممول</h3>
+    <p>استنى <span id="reward-timer">30</span> ثانية</p>
+    <p style="font-size:14px;color:#555">ممنوع الإغلاق</p>
+    <div id="real-ad-container" style="margin-top:15px;"></div>
+  </div>
+</div>
 
-function showGame() {
-    document.getElementById("login-screen").style.display = "none";
-    document.getElementById("game-interface").style.display = "block";
-}
+<!-- شروط الاستخدام -->
+<div id="terms-modal" class="modal">
+  <div class="modal-content">
+    <h3>شروط استخدام الموقع</h3>
+    <p>الإدارة تقدر تغلق حسابك أو تخصم نقاطك في أي وقت بدون سبب أو إشعار.
+النقاط تُحسب فقط من مشاهدة الإعلانات وبيع السلع في المتجر.</p>
+    <button onclick="acceptTerms()" style="background:#27ae60; color:white; padding:10px; border:none; border-radius:5px;">أوافق</button>
+  </div>
+</div>
 
-function updateUI() {
-    document.getElementById("display-name").innerText = userData.name || "لاعب";
-    document.getElementById("points").innerText = userData.points || 0;
-    document.getElementById("level").innerText = userData.level || 1;
-}
+<!-- شاشة تسجيل الدخول -->
+<div id="login-screen" class="container">
+  <h2>HX CASH HUNT</h2>
+  <img id="login-logo" src="https://files.catbox.moe/fghvtu.jpg">
+  <input type="email" id="email" placeholder="البريد الإلكتروني">
+  <input type="password" id="password" placeholder="كلمة السر">
+  <button onclick="login()">تسجيل الدخول</button>
+  <p id="login-error" style="color:#ff4757; margin-top:15px; font-weight:bold;"></p>
+</div>
 
-/* ===== تحميل إعلان al5sm ===== */
-function loadRealAd() {
-    const container = document.getElementById("real-ad-container");
-    if (!container) return;
+<!-- واجهة اللعبة -->
+<div id="game-interface" style="display:none;">
+  <div class="ad-banner">إعلان ثابت - Ad Space</div>
+  <div class="container">
+    <div class="top-nav">
+      <button class="btn-store">🛒 المتجر</button>
+      <button class="btn-history">🔔 الإشعارات</button>
+      <button class="btn-contact">تواصل معنا</button>
+    </div>
 
-    container.innerHTML = "";
+    <div class="user-stats">
+      <p>اللاعب: <span id="display-name">...</span></p>
+      <p>المستوى: <span id="level">1</span></p>
+      <p>النقاط: <span id="points">0</span></p>
+    </div>
 
-    const s = document.createElement("script");
-    s.dataset.zone = "10450260";
-    s.src = "https://al5sm.com/tag.min.js";
-    s.async = true;
+    <div class="game-area">
+      <div id="monster-container">
+        <img src="https://via.placeholder.com/120/ff0000/ffffff?text=Monster">
+        <div id="timer-box">الوقت: <span id="timer">0</span> ثانية</div>
+        <button id="attack-btn" onclick="startAttack()">بدء الهجوم</button>
+      </div>
+    </div>
 
-    container.appendChild(s);
-}
+    <div class="article-section">
+      <h3>ماذا يفعل موقعنا</h3>
+      <p>كل ما عليك هو مشاهدة الإعلان حتى نهايته، وبعدها تربح النقاط مباشرة!
+محتوى المتجر يتجدد باستمرار ويحتوي على اشتراكات مميزة وملفات بوتات وأرقام وهمية وغيرها.</p>
+    </div>
 
-/* ===== زر الهجوم (من غير كسر الموجود في index) ===== */
-if (!window.startAttack) {
-    window.startAttack = function () {
-        if (!currentUser) return;
+    <div id="youtube-description">
+      احدث بوت كراش ممكن تشتري من موقعنا 📛👇🏻📛
+    </div>
 
-        const uid = currentUser.uid;
-        const now = Date.now();
+    <div class="youtube-video">
+      <iframe src="https://www.youtube.com/embed/u06pVnjyMTo" allowfullscreen></iframe>
+    </div>
+  </div>
+</div>
 
-        db.ref("lastAttack/" + uid).once("value").then(snap => {
-            if (snap.exists() && now - snap.val() < COOLDOWN) {
-                alert("استنى دقيقة قبل الهجوم تاني");
-                return;
-            }
+<footer>© HX Cash Hunt جميع الحقوق محفوظة</footer>
 
-            db.ref("lastAttack/" + uid).set(now);
-            startRewardAd();
-        });
-    };
-}
+<script src="script.js"></script>
+<script>
+  // فتح الشروط أول مرة
+  document.getElementById('terms-modal').style.display = 'flex';
 
-function startRewardAd() {
-    const ad = document.getElementById("reward-ad");
-    const timerEl = document.getElementById("reward-timer");
-    let timeLeft = AD_TIME;
+  function acceptTerms() {
+    document.getElementById('terms-modal').style.display = 'none';
+  }
+</script>
 
-    ad.style.display = "flex";
-    timerEl.innerText = timeLeft;
-
-    loadRealAd();
-
-    const interval = setInterval(() => {
-        timeLeft--;
-        timerEl.innerText = timeLeft;
-
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            ad.style.display = "none";
-            giveReward();
-        }
-    }, 1000);
-}
-
-function giveReward() {
-    const newPoints = (userData.points || 0) + REWARD;
-
-    db.ref("users/" + currentUser.uid).update({ points: newPoints })
-    .then(() => {
-        userData.points = newPoints;
-        updateUI();
-    });
-}
-
-/* ===== ربط rewardUser مع index.html ===== */
-if (!window.rewardUser) {
-    window.rewardUser = giveReward;
-}
-
-/* ===== Login ===== */
-window.login = function () {
-    const email = document.getElementById("email").value.trim();
-    const pass = document.getElementById("password").value.trim();
-    const loginError = document.getElementById("login-error");
-
-    if (!email || !pass) {
-        loginError.innerText = "اكتب الإيميل والباسورد";
-        return;
-    }
-
-    auth.signInWithEmailAndPassword(email, pass)
-    .catch(() => loginError.innerText = "بيانات الدخول غير صحيحة");
-};
+</body>
+</html>
