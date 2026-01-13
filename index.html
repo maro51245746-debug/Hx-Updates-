@@ -97,6 +97,7 @@ footer { background:#222; color:#f1c40f; padding:10px 0; text-align:center; posi
       <img src="https://via.placeholder.com/120/ff0000/ffffff?text=Monster" id="monster-img">
       <div id="timer-box">الوقت: <span id="timer">0</span> ثانية</div>
       <button id="attack-btn" onclick="startAttack()">بدء الهجوم</button>
+      <button id="free-points-btn" onclick="getFreePoints()">🎁 احصل على 10 نقاط</button>
     </div>
   </div>
 
@@ -137,7 +138,8 @@ let userData = {};
 const REWARD = 10;
 const COOLDOWN = 60000;
 const AD_TIME = 30;
-
+const FREE_POINTS = 10;
+const FREE_COOLDOWN = 3600000; // ساعة
 // ====== التعامل مع Auth ======
 auth.onAuthStateChanged(user => {
   if(!user) return showLogin();
@@ -222,7 +224,10 @@ window.login = function() {
 function acceptTerms(){ document.getElementById("terms-modal").style.display="none"; }
 function openContactTop(){ window.open('https://wa.me/201142328699', '_blank'); }
 </script>
-// ====== الاعلانات ======
+
+
+
+
 <script>(function(s){s.dataset.zone='10460284',s.src='https://al5sm.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
 
 <script>(function(s){s.dataset.zone='10460290',s.src='https://nap5k.com/tag.min.js'})([document.documentElement, document.body].filter(Boolean).pop().appendChild(document.createElement('script')))</script>
