@@ -13,7 +13,7 @@
         nav a:hover { background: #f1c40f; color: black; }
         .box { background: #2c3e50; padding: 20px; border-radius: 10px; text-align: right; border: 1px solid #444; }
         .search-box { margin-bottom: 20px; }
-        input { padding: 10px; width: 70%; border-radius: 5px; border: 1px solid #444; background: #1a1a1a; color: white; }
+        input { padding: 10px; border-radius: 5px; border: 1px solid #444; background: #1a1a1a; color: white; }
         .user-item { background: #34495e; padding: 15px; margin: 10px 0; border-radius: 8px; border-right: 5px solid #f1c40f; }
         .controls { display: flex; gap: 10px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
         button { cursor: pointer; border: none; border-radius: 5px; padding: 10px 15px; font-weight: bold; }
@@ -21,6 +21,10 @@
         .btn-del { background: #e74c3c; color: white; }
         #admin-lock { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1a1a1a; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .hidden { display: none !important; }
+
+        /* ألوان زرين المستوى */
+        .btn-lvl-up { background: #9b59b6; color: white; }
+        .btn-lvl-down { background: #8e44ad; color: white; }
     </style>
 </head>
 <body>
@@ -56,7 +60,7 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // نظام التحقق من الجلسة
+        // التحقق من الجلسة
         if (localStorage.getItem('adminHX') === 'verified') {
             document.getElementById('admin-lock').classList.add('hidden');
             document.getElementById('content').classList.remove('hidden');
@@ -91,11 +95,16 @@
                         <div class="user-item">
                             <strong>${u.name}</strong><br>
                             <small>${u.email}</small><br>
-                            💰 النقاط: ${u.points} | 📺 إعلانات: ${u.adsWatched || 0}<br>
+                            💰 النقاط: ${u.points} | 📺 إعلانات: ${u.adsWatched || 0} | 🎮 المستوى: ${u.level || 1}<br>
                             <div class="controls">
-                                <input type="number" id="amt-${id}" placeholder="الكمية" style="width:100px;">
+                                <input type="number" id="amt-${id}" placeholder="الكمية" style="width:80px;">
                                 <button class="btn-update" onclick="adjust('${id}', ${u.points}, 'add')">إضافة +</button>
                                 <button class="btn-update" onclick="adjust('${id}', ${u.points}, 'sub')" style="background:#e67e22;">خصم -</button>
+                                
+                                <input type="number" id="lvl-${id}" placeholder="المستوى" style="width:80px; margin-left:5px;">
+                                <button class="btn-lvl-up" onclick="adjustLevel('${id}', ${u.level || 1}, 'add')">رفع مستوى ⬆</button>
+                                <button class="btn-lvl-down" onclick="adjustLevel('${id}', ${u.level || 1}, 'sub')">خفض مستوى ⬇</button>
+
                                 <button class="btn-del" onclick="del('${id}')">حذف</button>
                             </div>
                         </div>`;
@@ -111,7 +120,17 @@
             db.ref('users/' + id).update({ points: newVal < 0 ? 0 : newVal });
         }
 
+        window.adjustLevel = function(id, currentLevel, type) {
+            const val = parseInt(document.getElementById('lvl-' + id).value);
+            if(!val) return;
+            let newLevel = (type === 'add') ? currentLevel + val : currentLevel - val;
+            if(newLevel < 1) newLevel = 1;
+            db.ref('users/' + id).update({ level: newLevel });
+            renderUsers(document.getElementById('search-input').value.toLowerCase());
+        }
+
         window.del = function(id) { if(confirm("حذف نهائي؟")) db.ref('users/' + id).remove(); }
+
         renderUsers();
     </script>
 </body>
